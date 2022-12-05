@@ -6,7 +6,7 @@ public class PlayerMovement : MonoBehaviour
 {
     public CharacterController controller;
 
-    public float speed = 5;
+    public float speed = 20;
     public float gravity = -9.18f;
     public float jumpHeight = 3f;
 
@@ -37,7 +37,7 @@ public class PlayerMovement : MonoBehaviour
         float x = Input.GetAxis("Horizontal");
         float z = Input.GetAxis("Vertical");
 
-        Vector3 move = transform.right * x + transform.forward * z;
+        Vector3 move = transform.right * z + transform.forward * x;
 
         controller.Move(move * speed * Time.deltaTime);
 
