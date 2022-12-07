@@ -1,51 +1,72 @@
 using System.Collections;
+
+
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Security.Cryptography;
+using System.Threading;
 using UnityEngine;
 
-[RequireComponent(typeof(CharacterController), typeof(Animator))]
 public class PlayerController : MonoBehaviour
 {
+    public CharacterController controller;
+    public Transform cam;
 
-    private CharacterController characterController;
-    private Animator animator;
+    public float speed = 6;
+    public float gravity = -9.81f;
+    public float jumpHeight = 3;
+    Vector3 velocity;
+    bool isGrounded;
 
-    [SerializeField]
-    private float movementSpeed, rotationSpeed, jumpSpeed, gravity;
+    public Transform groundCheck;
+    public float groundDistance = 0.4f;
+    public LayerMask groundMask;
 
-    private Vector3 movementDirection = Vector3.zero;
-    private bool playerGrounded;
+    float turnSmoothVelocity;
+    public float turnSmoothTime = 0.5f;
 
-
-    void Start()
-    {
-        characterController = GetComponent<CharacterController>();
-        animator = GetComponent<Animator>();
-    }
-
+    // Update is called once per frame
     void Update()
     {
-        playerGrounded = characterController.isGrounded;
+        
+        float playerVerticalInput = Input.GetAxis("Vertical");
+        float playerHorizontalInput = Input.GetAxis("Horizontal");
 
-        //movement
-        Vector3 inputMovement = transform.forward * movementSpeed * Input.GetAxisRaw("Vertical");
-        characterController.Move(inputMovement * Time.deltaTime);
+        Vector3 forward = Camera.main.transform.forward;
+        Vector3 right = Camera.main.transform.right;
+        forward.y = 0;
+        right.y = 0;
+        forward = forward.normalized;
+        right = right.normalized;
 
-        transform.Rotate(Vector3.up * Input.GetAxisRaw("Horizontal") * rotationSpeed);
+
+        Vector3 forwardRelativeVerticalInput = playerVerticalInput * forward;
+        Vector3 rightRelativeVerticalInput = playerHorizontalInput * right;
+
+        Vector3 cameraRelativeMovement = forwardRelativeVerticalInput + rightRelativeVerticalInput;
+        controller.Move(cameraRelativeMovement * 0.1f);
+        
+        /*
+        //gravity
+        velocity.y += gravity * Time.deltaTime;
+        controller.Move(velocity * Time.deltaTime);
+        */
 
 
-        //jumping
-        if (Input.GetButton("Jump") && playerGrounded)
+
+
+
+
+
+
+
+
+        if (cameraRelativeMovement.magnitude >= 0.5f)
         {
-            movementDirection.y = jumpSpeed;
+            float targetAngle = Mathf.Atan2(playerHorizontalInput, playerVerticalInput) * Mathf.Rad2Deg + cam.eulerAngles.y - 90;
+            float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, turnSmoothTime);
+            transform.rotation = Quaternion.Euler(0f, angle, 0f);
+
         }
-        movementDirection.y -= gravity * Time.deltaTime;
-
-        characterController.Move(movementDirection * Time.deltaTime);
-
-
-        //animations
-        animator.SetBool("isRunning", Input.GetAxisRaw("Vertical") != 0);
-        animator.SetBool("isJumping", !characterController.isGrounded);
-
     }
 }
