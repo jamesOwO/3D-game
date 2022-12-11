@@ -1,11 +1,12 @@
 using System.Collections;
 
-
+using UnityEditor.SceneManagement;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Security.Cryptography;
 using System.Threading;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class ThirdPersonMovement : MonoBehaviour
 {
@@ -22,9 +23,15 @@ public class ThirdPersonMovement : MonoBehaviour
     public float groundDistance = 0.4f;
     public LayerMask groundMask;
 
+    Animator anim;
+
     float turnSmoothVelocity;
     public float turnSmoothTime = 0.1f;
 
+    void Start()
+    {
+        anim = GetComponent<Animator>();
+    }
     // Update is called once per frame
     void Update()
     {
@@ -36,10 +43,6 @@ public class ThirdPersonMovement : MonoBehaviour
             velocity.y = -2f;
         }
 
-        if (Input.GetButtonDown("Jump") && isGrounded)
-        {
-            velocity.y = Mathf.Sqrt(jumpHeight * -2 * gravity);
-        }
         //gravity
         velocity.y += gravity * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime);  
@@ -57,5 +60,30 @@ public class ThirdPersonMovement : MonoBehaviour
             Vector3 moveDir = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
             controller.Move(moveDir.normalized * speed * Time.deltaTime);
         }
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            anim.SetInteger("attack", 1);
+        }
+        else
+        {
+            anim.SetInteger("attack", 0);
+        }
+
+
     }
+    void OnCollisionStay(Collision collision)
+    {
+        if (collision.gameObject.tag == "Enemy")
+        {
+            bool colliding = true;
+            int animate = anim.GetInteger("attack");
+            if (animate == 1)
+            {
+                SceneManager.LoadScene(3);
+            }
+        }
+    }
+
+    
 }
