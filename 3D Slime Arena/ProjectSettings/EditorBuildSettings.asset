@@ -9,11 +9,11 @@ EditorBuildSettings:
     path: Assets/Scenes/StartScene.unity
     guid: 40bb108a94597b94abe7c2fbeb7f6763
   - enabled: 1
-    path: Assets/Scenes/arena.unity
-    guid: 0c36858cdf67bcc43b0f34218b7a7dfe
-  - enabled: 1
     path: Assets/Scenes/game.unity
     guid: 2356fba78807e744fbde7e386debc0cf
+  - enabled: 1
+    path: Assets/Scenes/arena.unity
+    guid: 0c36858cdf67bcc43b0f34218b7a7dfe
   - enabled: 1
     path: Assets/Scenes/EndScene.unity
     guid: 6e4d8daa906ba334baf506784b9fd4b0
